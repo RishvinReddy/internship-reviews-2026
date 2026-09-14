@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Internship Review Hub · 2026</title>
+    <meta name="description" content="Internship Review Hub — September 2026 · Woxsen University">
+    <style>
+        /* ============================================================
+           RESET — no document scroll, ever
+        ============================================================ */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            width:    100%;
+            height:   100%;
+            overflow: hidden;   /* ← zero scroll on html/body */
+            background: #eceef1; /* letterbox colour outside the frame */
+        }
+
+        body {
+            display:         flex;
+            align-items:     center;
+            justify-content: center;
+            font-family:     Georgia, "Times New Roman", serif;
+            color:           #16181d;
+        }
+
+        /* ============================================================
+           DESIGN TOKENS
+        ============================================================ */
+        :root {
+            --bg:          #f8f9fb;
+            --surface:     #ffffff;
+            --muted:       #666b73;
+            --muted-lt:    #9aa0a9;
+            --border:      #dfe3e8;
+            --border-blue: #b9cce0;
+            --blue:        #0876d1;
+            --blue-lt:     #eaf4ff;
+            --blue-mid:    #dceeff;
+            --mono:        "Courier New", Courier, monospace;
+        }
+
+        /* ============================================================
+           PRESENTATION STAGE — fixed 16:9 frame
+           Scales to fit the viewport while keeping the ratio.
+           Centered, letterboxed, never scrolls.
+        ============================================================ */
+        .stage {
+            /* Size = largest 16:9 rectangle that fits the viewport */
+            width:  min(100vw, calc(100vh * 16 / 9));
+            height: min(100vh, calc(100vw * 9 / 16));
+            aspect-ratio: 16 / 9;
+
+            position:   relative;
+            flex-shrink: 0;
+            overflow:   hidden;
+
+            background: var(--bg);
+            border:     1px solid var(--border);
+
+            /*
+             * All type inside the stage is scaled to the STAGE WIDTH
+             * via font-size on .stage.
+             * 1 rem = 1% of stage width conceptually.
+             * At a 1280 px stage: 1.1vw ≈ 14px base → comfortable.
+             */
+            font-size: min(1.1vw, calc(100vh * 16/9 * 0.0109));
+        }
+
+        /* ============================================================
+           INNER SAFE ZONE — flex column, fills the stage
+        ============================================================ */
+        .slide {
+            position:        absolute;
+            inset:           0;
+            padding:         3.6em 5em 3em 5em;
+            display:         flex;
+            flex-direction:  column;
+            gap:             0;
+            overflow:        hidden;
+        }
+
+        /* ============================================================
+           EYEBROW ROW
+        ============================================================ */
+        .eyebrow-row {
+            display:         flex;
+            align-items:     center;
+            justify-content: space-between;
+            margin-bottom:   1.4em;
+            flex-shrink:     0;
+        }
+
+        .eyebrow {
+            display:        flex;
+            align-items:    center;
+            gap:            1em;
+            font-family:    var(--mono);
+            font-size:      0.72em;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color:          var(--muted);
+        }
+        .ey-accent { color: var(--blue); font-weight: 700; }
+        .ey-dash   { width: 1.6em; height: 1px; background: var(--border); flex-shrink: 0; }
+
+        .eyebrow-year {
+            font-family:    var(--mono);
+            font-size:      0.72em;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color:          var(--muted-lt);
+        }
+
+        /* ============================================================
+           HEADER
+        ============================================================ */
+        .header-block {
+            flex-shrink: 0;
+            margin-bottom: 1.4em;
+        }
+
+        .display-heading {
+            font-size:      3.6em;
+            line-height:    0.93;
+            font-weight:    700;
+            letter-spacing: -0.05em;
+            margin-bottom:  0.4em;
+        }
+        .display-heading span { display: block; }
+
+        .tagline {
+            font-family:    Georgia, serif;
+            font-size:      0.98em;
+            line-height:    1.5;
+            color:          #16181d;
+            margin-bottom:  0.25em;
+        }
+
+        .sub-tagline {
+            font-family:    var(--mono);
+            font-size:      0.72em;
+            letter-spacing: 0.1em;
+            color:          var(--muted);
+        }
+
+        /* ============================================================
+           HORIZONTAL RULE
+        ============================================================ */
+        .h-rule {
+            width:        100%;
+            height:       1px;
+            background:   var(--border);
+            flex-shrink:  0;
+            margin-bottom: 1.4em;
+        }
+
+        /* ============================================================
+           REVIEW SCHEDULE
+        ============================================================ */
+        .schedule-block {
+            flex-shrink:   0;
+            margin-bottom: 1.4em;
+        }
+
+        .section-label {
+            font-family:    var(--mono);
+            font-size:      0.65em;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color:          var(--muted-lt);
+            margin-bottom:  0.9em;
+        }
+
+        /* flex timeline */
+        .timeline {
+            display:     flex;
+            align-items: flex-start;
+            width:       100%;
+        }
+
+        .t-node {
+            display:        flex;
+            flex-direction: column;
+            gap:            0.3em;
+            flex-shrink:    0;
+        }
+        .t-node.right { align-items: flex-end; text-align: right; }
+
+        .t-date {
+            font-family:    var(--mono);
+            font-size:      1.5em;
+            font-weight:    700;
+            letter-spacing: -0.03em;
+            color:          var(--blue);
+            line-height:    1;
+        }
+        .t-org {
+            font-size:      1em;
+            font-weight:    700;
+            letter-spacing: -0.02em;
+            line-height:    1.1;
+        }
+        .t-focus {
+            font-family:    var(--mono);
+            font-size:      0.65em;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color:          var(--muted);
+        }
+
+        /* track */
+        .t-track {
+            flex:            1;
+            display:         flex;
+            flex-direction:  column;
+            align-items:     center;
+            padding:         0 1.6em;
+            padding-top:     0.6em; /* align line to date baseline */
+        }
+
+        .t-line {
+            width:      100%;
+            height:     1px;
+            background: var(--blue);
+            position:   relative;
+            display:    flex;
+            align-items: center;
+            justify-content: center;
+        }
+        /* endpoint dots */
+        .t-line::before,
+        .t-line::after {
+            content:   "";
+            position:  absolute;
+            width:     0.7em;
+            height:    0.7em;
+            border-radius: 50%;
+            background: var(--blue);
+            top:       50%;
+            transform: translateY(-50%);
+        }
+        .t-line::before { left:  -0.35em; }
+        .t-line::after  { right: -0.35em; }
+
+        .t-arrow {
+            font-family: var(--mono);
+            font-size:   0.85em;
+            color:       var(--blue);
+            background:  var(--bg);
+            padding:     0 0.6em;
+            position:    relative;
+            z-index:     1;
+        }
+
+        .t-day {
+            font-family:    var(--mono);
+            font-size:      0.6em;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color:          var(--muted-lt);
+            margin-top:     0.5em;
+        }
+
+        /* ============================================================
+           CARDS SECTION — main content, takes remaining height
+        ============================================================ */
+        .cards-section {
+            flex:            1;
+            display:         flex;
+            flex-direction:  column;
+            min-height:      0; /* allow shrink inside flex parent */
+        }
+
+        .cards-label {
+            font-family:    var(--mono);
+            font-size:      0.65em;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color:          var(--muted-lt);
+            margin-bottom:  0.9em;
+            flex-shrink:    0;
+        }
+
+        .cards-grid {
+            display:     grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap:         1.4em;
+            flex:        1;
+            min-height:  0;
+        }
+
+        /* ---- individual card ---- */
+        .card {
+            display:         flex;
+            flex-direction:  column;
+            padding:         1.4em 1.6em;
+            background:      var(--surface);
+            border:          1px solid var(--border);
+            text-decoration: none;
+            color:           inherit;
+            overflow:        hidden;
+            transition:      transform 180ms ease,
+                             border-color 180ms ease,
+                             box-shadow 180ms ease;
+        }
+        .card:hover {
+            transform:    translateY(-3px);
+            border-color: var(--border-blue);
+            box-shadow:   0 8px 28px rgba(16,32,56,0.08);
+        }
+        .card:focus-visible {
+            outline:        3px solid rgba(8,118,209,0.25);
+            outline-offset: 3px;
+        }
+
+        /* status */
+        .card-status {
+            display:        inline-flex;
+            align-items:    center;
+            gap:            0.5em;
+            font-family:    var(--mono);
+            font-size:      0.62em;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color:          var(--blue);
+            margin-bottom:  0.8em;
+            flex-shrink:    0;
+        }
+        .s-dot {
+            width:         0.5em;
+            height:        0.5em;
+            border-radius: 50%;
+            background:    var(--blue);
+        }
+
+        /* header row inside card */
+        .card-hrow {
+            display:         flex;
+            justify-content: space-between;
+            align-items:     flex-start;
+            gap:             0.6em;
+            margin-bottom:   0.2em;
+        }
+        .card-idx {
+            font-family:    var(--mono);
+            font-size:      0.65em;
+            letter-spacing: 0.16em;
+            color:          var(--muted-lt);
+        }
+        .card-badge {
+            font-family:    var(--mono);
+            font-size:      0.65em;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color:          var(--muted);
+            flex-shrink:    0;
+            white-space:    nowrap;
+        }
+
+        .card-title {
+            font-size:      1.7em;
+            font-weight:    700;
+            letter-spacing: -0.03em;
+            line-height:    1.04;
+            margin-bottom:  0.45em;
+        }
+
+        .card-desc {
+            font-family:    var(--mono);
+            font-size:      0.72em;
+            line-height:    1.65;
+            letter-spacing: 0.02em;
+            color:          var(--muted);
+            flex:           1;
+        }
+
+        .card-rule {
+            width:      100%;
+            height:     1px;
+            background: var(--border);
+            margin:     0.9em 0 0.75em;
+            flex-shrink: 0;
+        }
+
+        .card-meta {
+            display:               grid;
+            grid-template-columns: 1fr 1fr;
+            gap:                   0.5em 1em;
+            margin-bottom:         0.9em;
+            flex-shrink:           0;
+        }
+        .m-label {
+            font-family:    var(--mono);
+            font-size:      0.58em;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color:          var(--muted-lt);
+            margin-bottom:  0.2em;
+        }
+        .m-value {
+            font-family:    var(--mono);
+            font-size:      0.7em;
+            line-height:    1.45;
+            color:          #16181d;
+        }
+
+        /* CTA */
+        .card-cta {
+            display:         flex;
+            align-items:     center;
+            justify-content: space-between;
+            gap:             0.8em;
+            flex-shrink:     0;
+        }
+        .cta-label {
+            font-family:    var(--mono);
+            font-size:      0.65em;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color:          var(--blue);
+            font-weight:    700;
+        }
+        .cta-arr {
+            display:         inline-flex;
+            align-items:     center;
+            justify-content: center;
+            width:           1.8em;
+            height:          1.8em;
+            border:          1px solid var(--border-blue);
+            background:      var(--blue-lt);
+            font-family:     var(--mono);
+            font-size:       0.9em;
+            color:           var(--blue);
+            flex-shrink:     0;
+            transition:      background 180ms ease, transform 180ms ease;
+        }
+        .card:hover .cta-arr {
+            background:  var(--blue-mid);
+            transform:   translateX(3px);
+        }
+
+        /* ============================================================
+           BOTTOM STRIP
+        ============================================================ */
+        .bottom-strip {
+            flex-shrink:   0;
+            border-top:    1px solid var(--border);
+            margin-top:    1.2em;
+            padding-top:   0.9em;
+            display:       flex;
+            align-items:   baseline;
+            justify-content: space-between;
+            gap:           1em;
+        }
+
+        .bs-left {
+            display:        flex;
+            flex-direction: column;
+            gap:            0.3em;
+        }
+        .bs-format-label {
+            font-family:    var(--mono);
+            font-size:      0.6em;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color:          var(--muted-lt);
+        }
+        .bs-format-value {
+            font-family:    var(--mono);
+            font-size:      0.72em;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color:          var(--muted);
+        }
+        .bs-right {
+            font-family:    var(--mono);
+            font-size:      0.72em;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color:          var(--blue);
+        }
+
+        /* ============================================================
+           REDUCED MOTION
+        ============================================================ */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                transition: none !important;
+                animation:  none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!--
+    .stage  = the 16:9 frame, never scrolls, centered in viewport
+    .slide  = inner safe-zone, flex column, distributes all sections
+-->
+<div class="stage" role="main">
+<div class="slide">
+
+    <!-- ── EYEBROW ROW ───────────────────────────────────────────── -->
+    <div class="eyebrow-row">
+        <div class="eyebrow">
+            <span class="ey-accent">Internship Reviews</span>
+            <span class="ey-dash"></span>
+            <span>Woxsen University</span>
+        </div>
+        <div class="eyebrow-year">September 2026</div>
+    </div>
+
+    <!-- ── DISPLAY HEADING ───────────────────────────────────────── -->
+    <div class="header-block">
+        <h1 class="display-heading" aria-label="Internship Review Hub">
+            <span>Internship</span>
+            <span>Review Hub</span>
+        </h1>
+        <p class="tagline">Two internship experiences. One consolidated review workspace.</p>
+        <p class="sub-tagline">September 2026 &middot; Online Internship Review &middot; Woxsen University</p>
+    </div>
+
+    <!-- ── RULE ──────────────────────────────────────────────────── -->
+    <div class="h-rule" role="separator"></div>
+
+    <!-- ── REVIEW SCHEDULE ───────────────────────────────────────── -->
+    <div class="schedule-block">
+        <p class="section-label">Review Schedule</p>
+
+        <div class="timeline" aria-label="Review schedule timeline">
+
+            <div class="t-node left">
+                <div class="t-date">15 Sep</div>
+                <div class="t-org">Pega Systems</div>
+                <div class="t-focus">Application Development</div>
+            </div>
+
+            <div class="t-track" aria-hidden="true">
+                <div class="t-line">
+                    <span class="t-arrow">&#8594;</span>
+                </div>
+                <div class="t-day">1 day</div>
+            </div>
+
+            <div class="t-node right">
+                <div class="t-date">16 Sep</div>
+                <div class="t-org">Data Lake Solutions</div>
+                <div class="t-focus">Cyber Security &amp; Technology</div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ── CARDS ─────────────────────────────────────────────────── -->
+    <section class="cards-section" aria-label="Presentations">
+        <p class="cards-label">Presentations</p>
+
+        <div class="cards-grid">
+
+            <!-- CARD 01 — PEGA SYSTEMS -->
+            <a
+                class="card"
+                href="./pega%20systems%20internship%20-%2015th%20sep/index.html"
+                aria-label="Open Pega Systems internship review"
+            >
+                <div class="card-status">
+                    <div class="s-dot" aria-hidden="true"></div>
+                    Review 01
+                </div>
+
+                <div class="card-hrow">
+                    <span class="card-idx">01 / Pega Systems</span>
+                    <span class="card-badge">15 Sep 2026</span>
+                </div>
+
+                <h2 class="card-title">Pega Systems</h2>
+
+                <p class="card-desc">
+                    Pega National Internship Program<br>
+                    Application Development
+                </p>
+
+                <div class="card-rule" role="separator"></div>
+
+                <div class="card-meta">
+                    <div>
+                        <div class="m-label">Focus</div>
+                        <div class="m-value">Application Development</div>
+                    </div>
+                    <div>
+                        <div class="m-label">Review</div>
+                        <div class="m-value">15 September 2026</div>
+                    </div>
+                </div>
+
+                <div class="card-cta">
+                    <span class="cta-label">Open Review</span>
+                    <span class="cta-arr" aria-hidden="true">&#8594;</span>
+                </div>
+            </a>
+
+            <!-- CARD 02 — DATA LAKE SOLUTIONS -->
+            <a
+                class="card"
+                href="./datalake%20tecl%20sol%20interns%20-%2016th%20sep/index.html"
+                aria-label="Open Data Lake Solutions internship review"
+            >
+                <div class="card-status">
+                    <div class="s-dot" aria-hidden="true"></div>
+                    Review 02
+                </div>
+
+                <div class="card-hrow">
+                    <span class="card-idx">02 / Data Lake Solutions</span>
+                    <span class="card-badge">16 Sep 2026</span>
+                </div>
+
+                <h2 class="card-title">Data Lake Solutions</h2>
+
+                <p class="card-desc">
+                    Technology Intern &ndash; Cyber Security<br>
+                    Technology Solutions &amp; Innovation
+                </p>
+
+                <div class="card-rule" role="separator"></div>
+
+                <div class="card-meta">
+                    <div>
+                        <div class="m-label">Focus</div>
+                        <div class="m-value">Cyber Security &amp; Technology</div>
+                    </div>
+                    <div>
+                        <div class="m-label">Review</div>
+                        <div class="m-value">16 September 2026</div>
+                    </div>
+                </div>
+
+                <div class="card-cta">
+                    <span class="cta-label">Open Review</span>
+                    <span class="cta-arr" aria-hidden="true">&#8594;</span>
+                </div>
+            </a>
+
+        </div>
+    </section>
+
+    <!-- ── BOTTOM STRIP ──────────────────────────────────────────── -->
+    <div class="bottom-strip">
+        <div class="bs-left">
+            <div class="bs-format-label">Review Format</div>
+            <div class="bs-format-value">Online &middot; Internship Progress &middot; September 2026</div>
+        </div>
+        <div class="bs-right">Rishvin Reddy</div>
+    </div>
+
+</div><!-- /slide -->
+</div><!-- /stage -->
+
+</body>
+</html>
