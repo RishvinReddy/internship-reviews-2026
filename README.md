@@ -296,19 +296,19 @@ The root `Index.html` serves as the navigation layer.
 ```
 internship-reviews-2026/
 │
-├── Index.html
+├── index.html
 │
 ├── README.md
 │
 ├── LICENSE
 │
-├── pega systems internship - 15th sep/
+├── pega/
 │   │
 │   ├── index.html
 │   ├── style.css
 │   └── script.js
 │
-└── datalake tecl sol interns - 16th sep/
+└── datalake/
     │
     ├── index.html
     ├── style.css
@@ -317,7 +317,7 @@ internship-reviews-2026/
 
 ### Root Files
 
-**`Index.html`**
+**`index.html`**
 
 The main Internship Review Hub. It provides navigation to:
 
@@ -583,7 +583,7 @@ Because the project is composed of static HTML, CSS and JavaScript, it does not 
 
 **Option 1 — Open directly**
 
-Open `Index.html` in a modern browser. The root page provides access to both presentations.
+Open `index.html` in a modern browser. The root page provides access to both presentations.
 
 **Option 2 — Local HTTP server**
 
@@ -755,16 +755,16 @@ The repository combines academic presentation requirements with a custom web-bas
 ```
 internship-reviews-2026/
 │
-├── Index.html          ← Internship Review Hub (16:9 navigator)
+├── index.html          ← Internship Review Hub (16:9 navigator)
 ├── README.md           ← Project documentation
 ├── LICENSE             ← MIT License
 │
-├── pega systems internship - 15th sep/
+├── pega/
 │   ├── index.html
 │   ├── style.css
 │   └── script.js
 │
-└── datalake tecl sol interns - 16th sep/
+└── datalake/
     ├── index.html
     ├── style.css
     └── script.js
